@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "@tsconfig/strictest",
+    "@tsconfig/node20"
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    // override extra strict rules
+    // "verbatimModuleSyntax": false,
+    "exactOptionalPropertyTypes": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "strictPropertyInitialization": false,
+    // enable required features
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    // output
+    "outDir": "dist",
+    "rootDir": "./",
+    "incremental": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "noEmitOnError": true,
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
