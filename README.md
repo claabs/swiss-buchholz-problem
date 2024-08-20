@@ -4,7 +4,7 @@
 
 With the introduction of the new [Initial Swiss Matchups rule](https://github.com/ValveSoftware/counter-strike_rules_and_regs/blob/main/major-supplemental-rulebook.md?plain=1#L324-L335) added for the 2024 Copenhagen Major cycle, a flaw with assigning round 3 matchups was created.
 
-There's about 0.6% chance that 1-1 record teams in round 3 cannot find valid matchups. It can cause the round 3 matchups selection to force a rematch, which is not allowed by the [current ruleset](https://github.com/ValveSoftware/counter-strike_rules_and_regs/blob/main/major-supplemental-rulebook.md#swiss-bracket).
+There's a 0.6% chance that 1-1 record teams in round 3 cannot find valid matchups. It can cause the round 3 matchups selection to force a rematch, which is not allowed by the [current ruleset](https://github.com/ValveSoftware/counter-strike_rules_and_regs/blob/main/major-supplemental-rulebook.md#swiss-bracket).
 
  >In round 2 and 3, the highest seeded team faces the lowest seeded team available that does not result in a rematch within the stage.
 
@@ -57,7 +57,7 @@ To fix this, the rules should be updated to either:
 
 1. Revert the Initial Swiss Matchups rule
 1. Seed the teams using the Initial Swiss Matchups rule throughout the entire Swiss event
-1. Come up with a table similar to the [six team matchup priority table](https://github.com/ValveSoftware/counter-strike_rules_and_regs/blob/main/major-supplemental-rulebook.md#swiss-bracket), but for eight teams
+1. Add a rule to resolve the scenario where rematch conflicts appear (e.g. seed 3v5 & seed 4v6)
 
 ## Running the simulation
 
