@@ -55,9 +55,9 @@ This conflicting matchup is **not** present when using the old seeding rules (1v
 
 To fix this, the rules should be updated to either:
 
+1. Add a rule to resolve the scenario where rematch conflicts appear (e.g. swap opponents for the last two matchups when a conflict occurs)
 1. Revert the Initial Swiss Matchups rule
 1. Seed the teams using the Initial Swiss Matchups rule throughout the entire Swiss event
-1. Add a rule to resolve the scenario where rematch conflicts appear (e.g. seed 3v5 & seed 4v6)
 
 ## Running the simulation
 
@@ -83,3 +83,5 @@ Ultimately, the conditions that cause conflicting scenarios are very varied, so 
 ### Settings
 
 In `initial-matchups.ts`, you can comment/uncomment the `generateInitialMatchups` definition to test out the original initial matchups rules, and see that it generates no conflicting scenarios.
+
+In `mid-matchups.ts`, you can comment/uncomment the `generateMidMatchups` definition to test out a proposed new fix for generating round 3 matchups that walks back matchups until a rematchless solution is found

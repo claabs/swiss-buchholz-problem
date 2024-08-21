@@ -107,6 +107,12 @@ export type MessageFromWorker =
   | MessageFromWorkerProgress
   | MessageFromWorkerErrorDetails;
 
+export class SimulationError extends Error {
+  errorDetail: Set<string>;
+
+  roundDetails: string;
+}
+
 export const formatResultsCounts = (
   categorizedResults: Map<string, TeamResultCounts>,
   simSettings: SimulationSettings,

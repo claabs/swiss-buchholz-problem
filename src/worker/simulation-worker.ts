@@ -1,24 +1,20 @@
 import { parentPort, workerData } from 'node:worker_threads';
-import type {
-  Matchup,
-  MessageFromWorkerErrorDetails,
-  MessageFromWorkerFinish,
-  MessageFromWorkerProgress,
-  OpponentCounts,
-  QualElimOutput,
-  SimulationEventMessage,
-  SimulationSettings,
-  TeamResultCounts,
-  TeamStanding,
-  TeamStandingWithDifficulty,
+import {
+  SimulationError,
+  type Matchup,
+  type MessageFromWorkerErrorDetails,
+  type MessageFromWorkerFinish,
+  type MessageFromWorkerProgress,
+  type OpponentCounts,
+  type QualElimOutput,
+  type SimulationEventMessage,
+  type SimulationSettings,
+  type TeamResultCounts,
+  type TeamStanding,
+  type TeamStandingWithDifficulty,
 } from '../simulator.js';
 import { generateInitialMatchups } from '../initial-matchups.js';
-
-class SimulationError extends Error {
-  errorDetail: Set<string>;
-
-  roundDetails: string;
-}
+import { generateMidMatchups } from '../mid-matchups.js';
 
 const splitStandingsToRecordGroups = (
   teamsStandings: TeamStandingWithDifficulty[]
@@ -189,27 +185,7 @@ const sixTeamMatchupPriority: [[number, number], [number, number], [number, numb
 
 const matchRecordGroup = (recordGroup: TeamStandingWithDifficulty[]): Matchup[] => {
   const sortedGroup = sortRecordGroup(recordGroup);
-  const roundDetails = sortedGroup
-    .map(
-      (t) =>
-        // Cloud9 2 1 win,loss
-        `${t.name}\t${t.difficulty}\t${t.seed}\t${t.pastOpponents
-          .map((o) => {
-            const matchup = [t.name, o.teamName];
-            if (!o.won) matchup.reverse();
-            return matchup.join('>');
-          })
-          .join(',')}`
-    )
-    .join('\n');
-  const matchupList = new Set<string>();
-  sortedGroup.forEach((t) =>
-    t.pastOpponents.forEach((o) => {
-      const matchup = [t.name, o.teamName];
-      if (!o.won) matchup.reverse();
-      matchupList.add(matchup.join('>'));
-    })
-  );
+
   const matchups: Matchup[] = [];
   if (sortedGroup.length === 6) {
     // In other rounds, refer to the following table and select the top-most row that does not result in a rematch:
@@ -232,43 +208,7 @@ const matchRecordGroup = (recordGroup: TeamStandingWithDifficulty[]): Matchup[] 
   } else if (sortedGroup.every((team) => team.pastOpponents.length === 0)) {
     matchups.push(...generateInitialMatchups(sortedGroup));
   } else {
-    // Matchups shall be determined by seed. In round 3, the highest seeded team faces the lowest seeded team available that does not result in a rematch within the stage.
-    while (sortedGroup.length) {
-      const highTeam = sortedGroup.shift();
-      if (!highTeam) throw new Error('Missing high seed team');
-      const skippedTeams = [];
-      let validLowTeam = false;
-      let lowTeam: TeamStandingWithDifficulty | undefined;
-
-      while (!validLowTeam) {
-        lowTeam = sortedGroup.pop();
-        if (!lowTeam) {
-          // console.info(
-          //   `Simulation failed, failed group:\nteam\tdifficulty\tseed\trecord\n${sortedGroupInfo.join(
-          //     '\n'
-          //   )}`
-          // );
-          const error = new SimulationError('No valid matchups for seeding found');
-          error.errorDetail = matchupList;
-          error.roundDetails = roundDetails;
-          throw error;
-        }
-        const lowTeamName = lowTeam.name;
-        if (!highTeam.pastOpponents.some((opp) => opp.teamName === lowTeamName)) {
-          validLowTeam = true;
-        } else {
-          skippedTeams.unshift(lowTeam);
-        }
-      }
-      sortedGroup.push(...skippedTeams); // Re-add skipped low seed teams to end of the array
-
-      if (highTeam && lowTeam) {
-        matchups.push({
-          teamA: highTeam,
-          teamB: lowTeam,
-        });
-      }
-    }
+    matchups.push(...generateMidMatchups(sortedGroup));
   }
   return matchups;
 };
